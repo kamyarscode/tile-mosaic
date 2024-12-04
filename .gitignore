@@ -1,3 +1,4 @@
 tile/
 img_src/
-
+build/
+src/tile_mosaic.egg-info/
