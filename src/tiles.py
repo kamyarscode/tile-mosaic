@@ -85,17 +85,16 @@ def get_region_color(img_array, polygon):
 
     return average_color
 
+# # Brief test here
+# image_path = "img_src/moon.jpg"
+# img = open_image(image_path).convert("RGB")
 
-# Brief test here
-image_path = "img_src/moon.jpg"
-img = open_image(image_path).convert("RGB")
+# # Apply Voronoi mosaic
+# output_image = voronoi_mosaic(img, num_points=100, line_thickness=5)
 
-# Apply Voronoi mosaic
-output_image = voronoi_mosaic(img, num_points=100, line_thickness=5)
-
-# Save or display the output
-output_image.show()
-output_image.save("mosaic_test.jpg")
+# # Save or display the output
+# output_image.show()
+# output_image.save("mosaic_test.jpg")
 
 
 
