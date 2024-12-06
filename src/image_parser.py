@@ -1,5 +1,6 @@
 from PIL import Image
 
+
 def open_image(input_path):
     """
     Opens an image file.
@@ -36,5 +37,3 @@ def export_image(image, output_path):
     except Exception as e:
         print(f"Error exporting image: {e}")
 
-
-print (open_image("img_src/moon.jpg"))
