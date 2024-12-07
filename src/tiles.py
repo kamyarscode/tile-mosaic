@@ -85,6 +85,10 @@ def get_region_color(img_array, polygon):
 
     return average_color
 
+# TODO: A common issue is the entire image is being rendered and split into tiles. This includes the whitespace that is useless around
+# the actual image. We need a way to just get the most important sections of the image. 
+
+
 # # Brief test here
 # image_path = "img_src/moon.jpg"
 # img = open_image(image_path).convert("RGB")
