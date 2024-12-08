@@ -85,8 +85,28 @@ def get_region_color(img_array, polygon):
 
     return average_color
 
-# TODO: A common issue is the entire image is being rendered and split into tiles. This includes the whitespace that is useless around
-# the actual image. We need a way to just get the most important sections of the image. 
+# We need to create a mask so we ignore irrelevant areas of the images. This includes white or black spaces in corners of the image.
+def create_mask(image, threshold=240):
+    """
+    Creates a binary mask to identify relevant areas in an image.
+    White or irrelevant regions are excluded based on a threshold. 
+    Adjust threshold value until optimal is achieved.
+
+    Args:
+        image (PIL.Image.Image): Input pillow image object
+        threshold (int): Intensity value to classify regions as irrelevant (default 240).
+
+    Returns:
+        numpy.ndarray: Resultant binary mask (1 for relevant areas, 0 for irrelevant areas).
+    """
+
+    # Convert image to grayscale
+    img_array = np.array(image.convert("L"))  # Convert to grayscale (L mode)
+
+    # Create a binary mask using thresholding
+    mask = img_array < threshold  # Relevant areas are below the threshold
+
+    return mask.astype(np.uint8)  # Convert to 0 and 1 values
 
 
 # # Brief test here
