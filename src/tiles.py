@@ -2,6 +2,8 @@
 import numpy as np
 from scipy.spatial import Voronoi
 from PIL import Image, ImageDraw
+from collections import defaultdict
+
 from skimage.draw import polygon as skpolygon
 
 from image_parser import open_image
@@ -108,6 +110,71 @@ def create_mask(image, threshold=240):
 
     return mask.astype(np.uint8)  # Convert to 0 and 1 values
 
+
+def merge_similar_regions(vor, region_colors, color_threshold):
+    """
+    Merges adjacent Voronoi regions with similar colors. If it adheres to specified threshold, they should merge and output avg color.
+
+    Args:
+        vor (scipy.spatial.Voronoi): Object for Voronoi diagram.
+        region_colors (dict): Dict mapping region index to the average color.
+        color_threshold (float): Value threshold for what colors to merge.
+
+    Returns:
+        dict: Merged regions as a mapping of region indices to new polygons.
+    """
+
+    # Function to calculate color difference between 2 colors.
+    def color_distance(color1, color2):
+        return np.linalg.norm(np.array(color1) - np.array(color2))
+
+    # Build adjacency list for regions
+    region_adjacency = defaultdict(set)
+    
+    for point_indices in vor.ridge_points:
+        region1, region2 = vor.point_region[point_indices]
+        if region1 != -1 and region2 != -1 and region1 in region_colors and region2 in region_colors:
+            # Add to region adjacent
+            region_adjacency[region1].add(region2)
+            region_adjacency[region2].add(region1)
+
+    # Merge regions based on color similarity
+    visited = set()
+    merged_regions = {}
+
+    for region_index, color in region_colors.items():
+        if region_index in visited:
+            continue
+
+        # Initialize a new merged region
+        merged_region = {region_index}
+        merged_polygon = [tuple(vor.vertices[i]) for i in vor.regions[region_index] if 0 <= i < len(vor.vertices)]
+        merged_color = color
+        region_queue = [region_index]
+        visited.add(region_index)
+
+        while region_queue:
+            current_region = region_queue.pop()
+            for neighbor in region_adjacency[current_region]:
+                if neighbor in visited:
+                    continue
+
+                neighbor_color = region_colors[neighbor]
+                if color_distance(merged_color, neighbor_color) < color_threshold:
+                    # Merge the neighbor into the region
+                    visited.add(neighbor)
+                    merged_region.add(neighbor)
+                    region_queue.append(neighbor)
+
+                    # Update the polygon which are a collection of vertices
+                    neighbor_polygon = [tuple(vor.vertices[i]) for i in vor.regions[neighbor] if 0 <= i < len(vor.vertices)]
+                    merged_polygon.extend(neighbor_polygon)
+
+        # Calculate the final average color for the merged region
+        merged_color = np.mean([region_colors[region] for region in merged_region], axis=0)
+        merged_regions[region_index] = (merged_polygon, tuple(map(int, merged_color)))
+
+    return merged_regions
 
 # # Brief test here
 # image_path = "img_src/moon.jpg"
