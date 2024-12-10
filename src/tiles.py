@@ -110,7 +110,8 @@ def create_mask(image, threshold=240):
 
     return mask.astype(np.uint8)  # Convert to 0 and 1 values
 
-
+# In order to decrease amount of voronoi regions, we need to merge regions with similar colors. Doing this will make it easier
+# for later when the images are printed and used.
 def merge_similar_regions(vor, region_colors, color_threshold):
     """
     Merges adjacent Voronoi regions with similar colors. If it adheres to specified threshold, they should merge and output avg color.
