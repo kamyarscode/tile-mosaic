@@ -177,16 +177,77 @@ def merge_similar_regions(vor, region_colors, color_threshold):
 
     return merged_regions
 
-# # Brief test here
-# image_path = "img_src/moon.jpg"
-# img = open_image(image_path).convert("RGB")
+def voronoi_with_region_merging(image, num_points=500, line_thickness=1, color_threshold=30):
+    """
+    Applies a Voronoi transformation with region merging based on color similarity.
 
-# # Apply Voronoi mosaic
-# output_image = voronoi_mosaic(img, num_points=100, line_thickness=5)
+    Args:
+        image (PIL.Image.Image): The input image as a Pillow object.
+        num_points (int): Number of seed points for the Voronoi.
+        line_thickness (int): Thickness of the lines.
+        color_threshold (float): Allowable color difference between regions.
 
-# # Save or display the output
-# output_image.show()
-# output_image.save("mosaic_test.jpg")
+    Returns:
+        PIL.Image.Image: The transformed image as a Pillow object.
+    """
+    
+    # Convert image to numpy array
+    img_array = np.array(image)
+    height, width, _ = img_array.shape
+
+    # Random seed points
+    points = [(np.random.randint(0, width), np.random.randint(0, height)) for _ in range(num_points)]
+
+    # Create Voronoi
+    vor = Voronoi(points)
+
+    # Compute average colors for all regions
+    region_colors = {}
+    for region_index in range(len(vor.regions)):
+        if -1 in vor.regions[region_index]:  # Skip unbounded regions
+            continue
+
+        # Get the region's vertices
+        polygon = [tuple(vor.vertices[i]) for i in vor.regions[region_index] if 0 <= i < len(vor.vertices)]
+        if len(polygon) < 3:
+            continue  
+
+        # Calculate average color of the region
+        temp_mask = np.zeros(img_array.shape[:2], dtype=bool)
+        x, y = zip(*polygon)
+        rr, cc = skpolygon(np.array(y), np.array(x), shape=img_array.shape[:2])
+        temp_mask[rr, cc] = True
+        region_pixels = img_array[temp_mask]
+        avg_color = tuple(region_pixels.mean(axis=0).astype(int)) if len(region_pixels) > 0 else (255, 255, 255)
+
+        region_colors[region_index] = avg_color
+
+    # Merge similar regions
+    merged_regions = merge_similar_regions(vor, region_colors, color_threshold)
+
+    # Draw the merged regions
+    output_img = Image.new("RGB", (width, height), (255, 255, 255))
+    draw = ImageDraw.Draw(output_img)
+
+    for _, (polygon, color) in merged_regions.items():
+        polygon = [(int(x), int(y)) for x, y in polygon]
+        draw.polygon(polygon, fill=color)
+
+        if line_thickness > 0:
+            draw.line(polygon + [polygon[0]], fill=(0, 0, 0), width=line_thickness)
+
+    return output_img
+
+# Brief test here
+# Load image
+image_path = "img_src/car.jpg"
+input_image = open_image(image_path).convert("RGB")
+
+# Apply Voronoi mosaic with region merging
+output_image = voronoi_with_region_merging(input_image, num_points=500, line_thickness=1, color_threshold=60)
+
+# Save or display the output
+output_image.show()
 
 
 
