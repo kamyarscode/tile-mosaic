@@ -40,7 +40,7 @@ def export_image(image, output_path):
 
 def rgb_to_color_name(rgb: tuple):
     """
-    Converts an RGB tuple to a human-readable color name using basic predefined colors.
+    Use pre-defined colors and Euclidean distance to find closest color to tuple rgb input. Print the color and show it as image. 
 
     Args:
         rgb (tuple): A tuple of (R, G, B) values.
@@ -48,6 +48,7 @@ def rgb_to_color_name(rgb: tuple):
     Returns:
         str: A string name for the color.
     """
+
     # Predefined color dictionary
     color_names = {
         (255, 0, 0): "Red",
@@ -70,5 +71,8 @@ def rgb_to_color_name(rgb: tuple):
             min_distance = distance
             closest_color = name
 
-    return closest_color or "Unknown"
+    # Create and show image here.
+    color_patch = Image.new("RGB", (100, 100), rgb)
+    color_patch.show()
 
+    return closest_color or "Unknown"
