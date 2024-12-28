@@ -1,7 +1,8 @@
 
 from image_parser import open_image
 from tiles import voronoi_with_region_merging
-def main():
+from image_parser import rgb_to_color_name
+def test():
     
     # Brief test here
     # Load image
@@ -14,5 +15,9 @@ def main():
     # Save or display the output
     output_image.show()
 
+def main():
+    print (rgb_to_color_name((63,84,246)))
+
 if __name__ == "__main__":
     main()
+
