@@ -88,7 +88,7 @@ def get_region_color(img_array, polygon):
     return average_color
 
 # We need to create a mask so we ignore irrelevant areas of the images. This includes white or black spaces in corners of the image.
-def create_mask(image, threshold=240):
+def create_mask(image, threshold=120):
     """
     Creates a binary mask to identify relevant areas in an image.
     White or irrelevant regions are excluded based on a threshold. 
@@ -96,7 +96,7 @@ def create_mask(image, threshold=240):
 
     Args:
         image (PIL.Image.Image): Input pillow image object
-        threshold (int): Intensity value to classify regions as irrelevant (default 240).
+        threshold (int): Intensity value to classify regions as irrelevant (default 120).
 
     Returns:
         numpy.ndarray: Resultant binary mask (1 for relevant areas, 0 for irrelevant areas).
