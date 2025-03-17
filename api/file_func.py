@@ -1,6 +1,5 @@
 from PIL import Image
-from io import BytesIO
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify
 
 def upload_image():
     if 'image' not in request.files:
