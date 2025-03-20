@@ -1,10 +1,12 @@
 import json
 import time
 from io import BytesIO
-
+import os
 from flask import Flask, request, jsonify, send_file, render_template
 from file_func import upload_image
-from tiles import voronoi_with_region_merging  # Import your function
+from tiles import voronoi_with_region_merging  
+
+#template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../templates"))
 
 app = Flask(__name__)
 
@@ -13,16 +15,22 @@ def index():
     """
     Serve the main HTML page for image upload.
     """
-    return render_template("upload.html")
+    print ("../templates/upload.html")
+    return render_template("D:/Projects/tile-mosaic/templates/upload.html")
 
-# Test endpoint here.
 @app.route('/api/test')
 def test():
-    
+    """
+    Serve the test endpoint.
+    """
+
     return "This is test endpoint."
 
 @app.route('/api/voronoi', methods=['POST'])
 def render_voronoi():
+    """
+    Add docs for this later. Probably going to change a lot..
+    """
     try:
         input_image = upload_image()
         # Apply the Voronoi mosaic function
